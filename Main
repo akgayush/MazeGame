@@ -1,0 +1,155 @@
+import java.util.Scanner;
+import java.util.Random;
+public class MazeGame {
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner s =new Scanner(System.in);
+		System.out.println("Enter 1 for easy , 2 for medium and 3 for hard");
+		int h=s.nextInt();
+		while(h>3 || h<1) {
+			System.out.println("Wrong difficulty please enter again.");
+			h=s.nextInt();
+		}
+       int n=0;
+       if(h==1) {
+    	   n=10;
+       }else if(h==2) {
+    	   n=15;
+       }else {
+    	   n=20;
+       }
+       
+       int maze[][]=new int[n][n];
+       boolean vis[][]=new boolean[n][n];
+       int i=0,j=0;
+       mazemake(maze,vis,0,0,0,0,n);
+       print(maze,n,i,j);
+       long startTime = System.nanoTime();
+       while(i!=(n-1) || j!=(n-1)) {
+    	   System.out.println("for right-1 , left-2 , up-3 , down-4 ");
+    	   int ab=s.nextInt();
+    	   if(ab>0 && ab<5) {
+    		  if(ab==4) {
+    			  if((i+1)>=0 && (i+1)<(n) && (maze[i][j] & 4)>0) {
+    				  i++;
+    			  }else {
+    				  System.out.println("wrong option try again");
+    			  }
+    		  }else if(ab==3) {
+    			  if((i-1)>=0 && (i-1)<(n) && (maze[i][j] & 1)>0) {
+    				  i--;
+    			  }else {
+    				  System.out.println("wrong option try again");
+    			  }
+    			  
+    		  }else if(ab==1) {
+    			  if((j+1)>=0 && (j+1)<(n) && (maze[i][j] & 2)>0) {
+    				  j++;
+    			  }else {
+    				  System.out.println("wrong option try again");
+    			  }
+    		  }else if(ab==2) {
+    			  if((j-1)>=0 && (j-1)<(n) && (maze[i][j] & 8)>0) {
+    				  j--;
+    			  }else {
+    				  System.out.println("wrong option try again");
+    			  }
+    		  }
+    	   }else {
+    		   System.out.println("wrong option try again");
+    	   }
+    	   print(maze,n,i,j);
+       }
+       //System.out.println("You have reached the end of the maze");
+       
+       long endTime   = System.nanoTime();
+       long totalTime = endTime - startTime;
+       totalTime/=1000000000;
+       long min=totalTime/60,sec=totalTime%60;;
+       System.out.println(min +"." +sec+" min taken to reach the end of the maze.");
+       s.close();
+	}
+	public static void mazemake(int maze[][],boolean vis[][],int i,int j,int previ,int prevj,int n) {
+		if(i<0 || i>(n-1) || j<0 || j>(n-1) || vis[i][j]==true) {
+			return;
+		}
+		vis[i][j]=true;
+		if(i-previ==1) {
+			maze[i][j]=maze[i][j]|1;
+			maze[i-1][j]=maze[i-1][j]|4;
+		}else if(i-previ==-1) {
+			maze[i+1][j]=maze[i+1][j]|1;
+			maze[i][j]=maze[i][j]|4;
+		}else if(j-prevj==1){
+			maze[i][j]=maze[i][j]|8;
+			maze[i][j-1]=maze[i][j-1]|2;
+		}else if(j-prevj==-1) {
+			maze[i][j]=maze[i][j]|2;
+			maze[i][j+1]=maze[i][j+1]|8;
+		}
+		Random rd = new Random();
+		boolean a[]=new boolean[4];
+		for(int k=0;k<4;k++) {
+			int r=rd.nextInt()%4;
+			if(r<0) {
+				r=r*-1;
+			}
+			while(a[r]==true) {
+				r=(r+1)%4;
+				if(r<0) {
+					r=r*-1;
+				}
+			}
+			a[r]=true;
+			if(r==0) {
+				mazemake(maze,vis,i+1,j,i,j,n);
+			}else if(r==1) {
+				mazemake(maze,vis,i,j+1,i,j,n);
+			}else if(r==2) {
+				mazemake(maze,vis,i-1,j,i,j,n);
+			}else if(r==3) {
+				mazemake(maze,vis,i,j-1,i,j,n);
+			}
+		}
+	}
+    public static void print(int maze[][],int n,int l,int m) {
+		for(int j=0;j<n;j++) {
+			System.out.print(" ___");
+		}
+		for(int i=0;i<n;i++) {
+			System.out.println();
+			System.out.print("|");
+			for(int j=0;j<n;j++) {
+				if(i==l && j==m) {
+					if((maze[i][j] & 2)==0) {
+						System.out.print(" O |");
+					}else {
+						System.out.print(" O  ");
+					}
+				}else {
+					if((maze[i][j] & 2)==0) {
+						System.out.print("   |");
+					}else {
+						System.out.print("    ");
+					}
+				}
+				
+			}
+			System.out.println();
+			System.out.print("|");
+			for(int j=0;j<n;j++) {
+				if((maze[i][j] & 2)>0 && (maze[i][j] & 4)>0) {
+					System.out.print("    ");
+				}else if((maze[i][j] & 2)>0) {
+					System.out.print("___ ");
+				}else if((maze[i][j] & 4)>0) {
+					System.out.print("   |");
+				}else {
+					System.out.print("___|");
+				}
+			}
+			
+		}
+		System.out.println();
+    }
+}
